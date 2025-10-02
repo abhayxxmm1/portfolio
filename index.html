@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Abhay's Portfolio - Modern Developer</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Dark Mode Variables */
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --text-primary: #111111;
+            --text-secondary: #474A4C;
+            --text-accent: #1017C2;
+            --border-color: #e9ecef;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --gradient-overlay: rgba(255, 255, 255, 0.9);
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #1a1a1a;
+            --text-primary: #ffffff;
+            --text-secondary: #b3b3b3;
+            --text-accent: #4c6ef5;
+            --border-color: #333333;
+            --shadow-color: rgba(255, 255, 255, 0.1);
+            --gradient-overlay: rgba(10, 10, 10, 0.9);
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Dark Mode Toggle */
+        .theme-toggle {
+            position: fixed;
+            top: 50%;
+            right: 2rem;
+            transform: translateY(-50%);
+            z-index: 1000;
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 50px;
+            padding: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            min-width: 60px;
+            justify-content: center;
+        }
+
+        .theme-toggle:hover {
+            transform: translateY(-50%) scale(1.1);
+            box-shadow: 0 8px 25px var(--shadow-color);
+        }
+
+        .theme-icon {
+            font-size: 1.2rem;
+            transition: transform 0.3s ease;
+        }
+
+        [data-theme="dark"] .sun-icon {
+            transform: rotate(180deg) scale(0);
+        }
+
+        [data-theme="light"] .moon-icon {
+            transform: rotate(-180deg) scale(0);
+        }
+
+        .sun-icon {
+            transform: rotate(0deg) scale(1);
+        }
+
+        .moon-icon {
+            transform: rotate(0deg) scale(1);
+        }
+
+        /* Update existing elements for dark mode */
+        .navbar {
+            background-color: var(--gradient-overlay);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .nav-link {
+            color: var(--text-primary);
+        }
+
+        .hero-title {
+            color: var(--text-primary);
+        }
+
+        .hero-description {
+            color: var(--text-secondary);
+        }
+
+        .section-title {
+            color: var(--text-primary);
+        }
+
+        .section-subtitle {
+            color: var(--text-secondary);
+        }
+
+        .cta-button.primary {
+            background: var(--text-accent);
+        }
+
+        .cta-button.secondary {
+            color: var(--text-primary);
+            border: 2px solid var(--border-color);
+            background: transparent;
+        }
+
+        .footer {
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+            border-top: 1px solid var(--border-color);
+        }
+
+        .footer-tagline {
+            color: var(--text-secondary);
+        }
+
+        .mobile-menu {
+            background-color: var(--bg-primary);
+        }
+
+        .loading-screen {
+            background-color: var(--bg-primary);
+        }
+
+        .loading-text span {
+            color: var(--text-primary);
+        }
+
+        .progress-bar {
+            background: var(--text-accent);
+        }
+
+        @media (max-width: 768px) {
+            .theme-toggle {
+                top: 1rem;
+                right: 1rem;
+                transform: none;
+                position: fixed;
+            }
+            
+            .theme-toggle:hover {
+                transform: scale(1.1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Theme Toggle -->
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+        <span class="theme-icon sun-icon">☀️</span>
+        <span class="theme-icon moon-icon">🌙</span>
+    </button>
+
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-text">
+            <span>A</span><span>B</span><span>H</span><span>A</span><span>Y</span>
+        </div>
+        <div class="loading-progress">
+            <div class="progress-bar"></div>
+        </div>
+    </div>
+
+    <!-- Cursor -->
+    <div class="cursor" id="cursor">
+        <div class="cursor-dot"></div>
+        <div class="cursor-circle"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <a href="index.html">Abhay</a>
+            </div>
+            <div class="nav-menu" id="navMenu">
+                <a href="index.html" class="nav-link active">Home</a>
+                <a href="./public/work.html" class="nav-link">Work</a>
+                <a href="./public/about.html" class="nav-link">About</a>
+                <a href="./public/contact.html" class="nav-link">Contact</a>
+            </div>
+            <div class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="mobile-menu-content">
+            <div class="mobile-nav-header">
+                <h3>Navigation</h3>
+                <button class="close-mobile-menu" id="closeMobileMenu">&times;</button>
+            </div>
+            <div class="mobile-nav-links">
+                <a href="index.html" class="mobile-nav-link">
+                    <span class="mobile-nav-number">01</span>
+                    <span class="mobile-nav-text">Home</span>
+                </a>
+                <a href="./public/work.html" class="mobile-nav-link">
+                    <span class="mobile-nav-number">02</span>
+                    <span class="mobile-nav-text">Work</span>
+                </a>
+                <a href="./public/about.html" class="mobile-nav-link">
+                    <span class="mobile-nav-number">03</span>
+                    <span class="mobile-nav-text">About</span>
+                </a>
+                <a href="./public/contact.html" class="mobile-nav-link">
+                    <span class="mobile-nav-number">04</span>
+                    <span class="mobile-nav-text">Contact</span>
+                </a>
+            </div>
+            <div class="mobile-nav-social">
+                <a href="#" class="social-link">Instagram</a>
+                <a href="#" class="social-link">Twitter</a>
+                <a href="#" class="social-link">LinkedIn</a>
+                <a href="#" class="social-link">GitHub</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Hero Section -->
+        <section id="home" class="hero-section">
+            <div class="hero-bg">
+                <div class="hero-gradient"></div>
+            </div>
+            <div class="hero-container">
+                <div class="hero-content">
+                    <div class="hero-label">
+                        <span>Portfolio 2025</span>
+                    </div>
+                    <h1 class="hero-title">
+                        <span class="hero-title-line">Helping brands to</span>
+                        <span class="hero-title-line">stand out in the</span>
+                        <span class="hero-title-line hero-title-highlight">digital era.</span>
+                    </h1>
+                    <div class="hero-description">
+                        <p>Together we will set the new status quo. No nonsense, always on the cutting edge.</p>
+                        <p>The combination of my passion for design, code & interaction positions me in a unique place in the web design world.</p>
+                    </div>
+                    <div class="hero-cta">
+                        <a href="./public/work.html" class="cta-button primary">
+                            <span>View My Work</span>
+                            <div class="cta-arrow">→</div>
+                        </a>
+                        <a href="./public/about.html" class="cta-button secondary">
+                            <span>About Me</span>
+                        </a>
+                    </div>
+                </div>
+                <div class="hero-scroll">
+                    <div class="scroll-indicator">
+                        <span>Scroll</span>
+                        <div class="scroll-line"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Work Section -->
+        <section id="work" class="work-section">
+            <div class="section-container">
+                <div class="section-header">
+                    <div class="section-number">01</div>
+                    <h2 class="section-title">Featured Work</h2>
+                    <p class="section-subtitle">A selection of projects that showcase my expertise in web development and design.</p>
+                </div>
+                
+                <div class="work-grid">
+                    <div class="work-item" data-project="1">
+                        <div class="work-image">
+                            <img src="./assets/images/Screenshot (22).png" alt="Birthday Invite Project">
+                            <div class="work-overlay">
+                                <div class="work-overlay-content">
+                                    <h3>Birthday Invite</h3>
+                                    <p>Web Design • Development</p>
+                                    <a href="./public/work.html" class="work-link">View Project</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="work-info">
+                            <div class="work-meta">
+                                <span class="work-category">Web Development</span>
+                                <span class="work-year">2025</span>
+                            </div>
+                            <h3 class="work-title">Birthday Invite Project</h3>
+                            <p class="work-description">A beautiful and interactive birthday invitation website with modern design principles.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="work-grid">
+                    <div class="work-item" data-project="1">
+                        <div class="work-image">
+                            <img src="./assets/images/Screenshot (22).png" alt="Birthday Invite Project">
+                            <div class="work-overlay">
+                                <div class="work-overlay-content">
+                                    <h3>Birthday Invite</h3>
+                                    <p>Web Design • Development</p>
+                                    <a href="./public/work.html" class="work-link">View Project</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="work-info">
+                            <div class="work-meta">
+                                <span class="work-category">Web Development</span>
+                                <span class="work-year">2025</span>
+                            </div>
+                            <h3 class="work-title">Birthday Invite Project</h3>
+                            <p class="work-description">A beautiful and interactive birthday invitation website with modern design principles.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-content">
+                <div class="footer-left">
+                    <div class="footer-logo">Abhay</div>
+                    <div class="footer-tagline">Helping brands stand out in the digital era.</div>
+                </div>
+                <div class="footer-right">
+                    <div class="footer-social">
+                        <a href="#" class="footer-social-link">Instagram</a>
+                        <a href="#" class="footer-social-link">Twitter</a>
+                        <a href="#" class="footer-social-link">LinkedIn</a>
+                        <a href="#" class="footer-social-link">GitHub</a>
+                    </div>
+                    <div class="footer-copyright">
+                        © 2025 Abhay. All rights reserved.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Dark Mode Script -->
+    <script>
+        // Dark Mode Functionality
+        const themeToggle = document.getElementById('themeToggle');
+        const htmlElement = document.documentElement;
+        
+        // Check for saved theme preference or default to 'light'
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        htmlElement.setAttribute('data-theme', currentTheme);
+        
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = htmlElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            htmlElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        });
+    </script>
+    <script src="script.js"></script>
+</body>
+</html>

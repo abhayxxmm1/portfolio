@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact - Abhay's Portfolio</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Dennis Snellenberg Style Animated Text */
+        .dennis-animated-text {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: clamp(8rem, 20vw, 25rem);
+            font-weight: 900;
+            color: rgba(17, 17, 17, 0.03);
+            letter-spacing: -0.02em;
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 1;
+            user-select: none;
+            font-family: var(--font-primary, 'Inter', sans-serif);
+            line-height: 1;
+            will-change: transform;
+            transition: transform 0.1s ease-out;
+        }
+        
+        .page-content {
+            position: relative;
+            z-index: 10;
+            background: transparent;
+            min-height: 200vh;
+        }
+        
+        .content-section {
+            padding: 8rem 2rem 4rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .page-header {
+            margin-bottom: 4rem;
+        }
+        
+        .page-subtitle {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--color-accent, #1017C2);
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            margin-bottom: 1rem;
+        }
+        
+        .page-title {
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 2rem;
+            color: var(--color-primary, #111111);
+        }
+        
+        .page-description {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            color: var(--color-secondary, #474A4C);
+            max-width: 600px;
+        }
+        
+        .contact-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6rem;
+            margin-top: 4rem;
+        }
+        
+        .contact-methods {
+            margin-top: 2rem;
+        }
+        
+        .contact-method {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: rgba(248, 249, 250, 0.5);
+            border-radius: 12px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .method-icon {
+            font-size: 1.5rem;
+            margin-right: 1.5rem;
+            width: 40px;
+            text-align: center;
+        }
+        
+        .method-info h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+            color: var(--color-primary, #111111);
+        }
+        
+        .method-info p {
+            font-size: 1rem;
+            color: var(--color-secondary, #474A4C);
+            margin: 0;
+        }
+        
+        .contact-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--color-accent, #1017C2);
+        }
+        
+        .submit-button {
+            padding: 1rem 2rem;
+            background: var(--color-accent, #1017C2);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        
+        .submit-button:hover {
+            background: #0c14a8;
+            transform: translateY(-2px);
+        }
+        
+        @media (max-width: 768px) {
+            .contact-content {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-text">
+            <span>C</span><span>O</span><span>N</span><span>T</span><span>A</span><span>C</span><span>T</span>
+        </div>
+        <div class="loading-progress">
+            <div class="progress-bar"></div>
+        </div>
+    </div>
+
+    <!-- Cursor -->
+    <div class="cursor" id="cursor">
+        <div class="cursor-dot"></div>
+        <div class="cursor-circle"></div>
+    </div>
+
+    <!-- Dennis Style Animated Background Text -->
+    <div class="dennis-animated-text" id="animatedText">CONTACT</div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <a href="../index.html">Abhay</a>
+            </div>
+            <div class="nav-menu" id="navMenu">
+                <a href="../index.html" class="nav-link">Home</a>
+                <a href="work.html" class="nav-link">Work</a>
+                <a href="about.html" class="nav-link">About</a>
+                <a href="contact.html" class="nav-link active">Contact</a>
+            </div>
+            <div class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="mobile-menu-content">
+            <div class="mobile-nav-header">
+                <h3>Navigation</h3>
+                <button class="close-mobile-menu" id="closeMobileMenu">&times;</button>
+            </div>
+            <div class="mobile-nav-links">
+                <a href="../index.html" class="mobile-nav-link">
+                    <span class="mobile-nav-number">01</span>
+                    <span class="mobile-nav-text">Home</span>
+                </a>
+                <a href="work.html" class="mobile-nav-link">
+                    <span class="mobile-nav-number">02</span>
+                    <span class="mobile-nav-text">Work</span>
+                </a>
+                <a href="about.html" class="mobile-nav-link">
+                    <span class="mobile-nav-number">03</span>
+                    <span class="mobile-nav-text">About</span>
+                </a>
+                <a href="contact.html" class="mobile-nav-link">
+                    <span class="mobile-nav-number">04</span>
+                    <span class="mobile-nav-text">Contact</span>
+                </a>
+            </div>
+            <div class="mobile-nav-social">
+                <a href="#" class="social-link">Instagram</a>
+                <a href="#" class="social-link">Twitter</a>
+                <a href="#" class="social-link">LinkedIn</a>
+                <a href="#" class="social-link">GitHub</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page Content -->
+    <main class="page-content">
+        <section class="content-section">
+            <div class="page-header">
+                <div class="page-subtitle">Get In Touch</div>
+                <h1 class="page-title">Let's Work Together</h1>
+                <p class="page-description">
+                    Have a project in mind? Let's discuss how we can bring your ideas to life.
+                </p>
+            </div>
+
+            <div class="contact-content">
+                <div>
+                    <h3 style="font-size: 1.8rem; margin-bottom: 2rem;">Contact Information</h3>
+                    <div class="contact-methods">
+                        <div class="contact-method">
+                            <div class="method-icon">📧</div>
+                            <div class="method-info">
+                                <h4>Email</h4>
+                                <p>abhay@example.com</p>
+                            </div>
+                        </div>
+                        <div class="contact-method">
+                            <div class="method-icon">📱</div>
+                            <div class="method-info">
+                                <h4>Phone</h4>
+                                <p>+91 12345 67890</p>
+                            </div>
+                        </div>
+                        <div class="contact-method">
+                            <div class="method-icon">📍</div>
+                            <div class="method-info">
+                                <h4>Location</h4>
+                                <p>India</p>
+                            </div>
+                        </div>
+                        <div class="contact-method">
+                            <div class="method-icon">💼</div>
+                            <div class="method-info">
+                                <h4>LinkedIn</h4>
+                                <p>@abhay-dev</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 style="font-size: 1.8rem; margin-bottom: 2rem;">Send a Message</h3>
+                    <form class="contact-form" id="contactForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <input type="text" placeholder="Full Name *" required>
+                            </div>
+                            <div class="form-group">
+                                <input type="email" placeholder="Email Address *" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" placeholder="Subject *" required>
+                        </div>
+                        <div class="form-group">
+                            <select>
+                                <option value="">Select Project Type</option>
+                                <option value="web-development">Web Development</option>
+                                <option value="web-design">Web Design</option>
+                                <option value="full-stack">Full Stack Application</option>
+                                <option value="consultation">Consultation</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <textarea placeholder="Tell me about your project..." rows="6" required></textarea>
+                        </div>
+                        <button type="submit" class="submit-button">
+                            <span>Send Message</span>
+                            <span>→</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Additional Content for Scrolling -->
+            <div style="margin-top: 8rem; padding: 4rem 0;">
+                <div class="page-subtitle">FAQ</div>
+                <h2 class="page-title" style="font-size: 2rem;">Frequently Asked Questions</h2>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-top: 3rem;">
+                    <div style="padding: 2rem; background: rgba(248, 249, 250, 0.5); border-radius: 12px;">
+                        <h4 style="margin-bottom: 1rem;">How long does a project take?</h4>
+                        <p style="color: #666; line-height: 1.6;">Most projects take 2-6 weeks depending on complexity and requirements.</p>
+                    </div>
+                    <div style="padding: 2rem; background: rgba(248, 249, 250, 0.5); border-radius: 12px;">
+                        <h4 style="margin-bottom: 1rem;">Do you work internationally?</h4>
+                        <p style="color: #666; line-height: 1.6;">Yes! I work with clients globally and am comfortable with remote collaboration.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-content">
+                <div class="footer-left">
+                    <div class="footer-logo">Abhay</div>
+                    <div class="footer-tagline">Helping brands stand out in the digital era.</div>
+                </div>
+                <div class="footer-right">
+                    <div class="footer-social">
+                        <a href="#" class="footer-social-link">Instagram</a>
+                        <a href="#" class="footer-social-link">Twitter</a>
+                        <a href="#" class="footer-social-link">LinkedIn</a>
+                        <a href="#" class="footer-social-link">GitHub</a>
+                    </div>
+                    <div class="footer-copyright">
+                        © 2025 Abhay. All rights reserved.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Dennis Style Animation Script -->
+    <script>
+        let lastScrollY = 0;
+        const animatedText = document.getElementById('animatedText');
+        
+        window.addEventListener('scroll', () => {
+            const currentScrollY = window.scrollY;
+            
+            // Dennis Snellenberg style animation - move LEFT when scrolling DOWN
+            const translateX = -currentScrollY * 0.5;
+            animatedText.style.transform = `translate(calc(-50% + ${translateX}px), -50%)`;
+            
+            lastScrollY = currentScrollY;
+        });
+    </script>
+    <script src="../script.js"></script>
+</body>
+</html>

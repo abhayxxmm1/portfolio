@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - Abhay's Portfolio</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Dark Mode Variables */
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --text-primary: #111111;
+            --text-secondary: #474A4C;
+            --text-accent: #1017C2;
+            --border-color: #e9ecef;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --gradient-overlay: rgba(255, 255, 255, 0.9);
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #1a1a1a;
+            --text-primary: #ffffff;
+            --text-secondary: #b3b3b3;
+            --text-accent: #4c6ef5;
+            --border-color: #333333;
+            --shadow-color: rgba(255, 255, 255, 0.1);
+            --gradient-overlay: rgba(10, 10, 10, 0.9);
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Dennis Snellenberg Style Animated Text */
+        .dennis-animated-text {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: clamp(8rem, 20vw, 25rem);
+            font-weight: 900;
+            color: var(--text-primary);
+            opacity: 0.03;
+            letter-spacing: -0.02em;
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 1;
+            user-select: none;
+            font-family: var(--font-primary, 'Inter', sans-serif);
+            line-height: 1;
+            will-change: transform;
+            transition: transform 0.1s ease-out, color 0.3s ease;
+        }
+        
+        .page-content {
+            position: relative;
+            z-index: 10;
+            background: transparent;
+            min-height: 200vh;
+        }
+        
+        .content-section {
+            padding: 8rem 2rem 4rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 10;
+        }
+        
+        /* Dark Mode Toggle */
+        .theme-toggle {
+            position: fixed;
+            top: 50%;
+            right: 2rem;
+            transform: translateY(-50%);
+            z-index: 1000;
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 50px;
+            padding: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            min-width: 60px;
+            justify-content: center;
+        }
+
+        .theme-toggle:hover {
+            transform: translateY(-50%) scale(1.1);
+            box-shadow: 0 8px 25px var(--shadow-color);
+        }
+
+        .theme-icon {
+            font-size: 1.2rem;
+            transition: transform 0.3s ease;
+        }
+
+        [data-theme="dark"] .sun-icon {
+            transform: rotate(180deg) scale(0);
+        }
+
+        [data-theme="light"] .moon-icon {
+            transform: rotate(-180deg) scale(0);
+        }
+
+        .sun-icon {
+            transform: rotate(0deg) scale(1);
+        }
+
+        .moon-icon {
+            transform: rotate(0deg) scale(1);
+        }
+
+        /* Update page elements */
+        .page-subtitle {
+            color: var(--text-accent);
+        }
+        
+        .page-title {
+            color: var(--text-primary);
+        }
+        
+        .page-description {
+            color: var(--text-secondary);
+        }
+
+        .about-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 6rem;
+            margin: 4rem 0;
+            align-items: start;
+        }
+        
+        .about-text h3 {
+            color: var(--text-primary);
+        }
+        
+        .about-paragraph {
+            color: var(--text-secondary);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 2rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-accent);
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            color: var(--text-secondary);
+        }
+
+        .about-photo {
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--border-color) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            border: 3px solid var(--border-color);
+        }
+
+        .navbar {
+            background-color: var(--gradient-overlay);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .nav-link {
+            color: var(--text-primary);
+        }
+
+        .skill-category h4 {
+            color: var(--text-primary);
+        }
+
+        .skill-tag {
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+        }
+
+        .footer {
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+            border-top: 1px solid var(--border-color);
+        }
+
+        .mobile-menu {
+            background-color: var(--bg-primary);
+        }
+
+        .loading-screen {
+            background-color: var(--bg-primary);
+        }
+
+        .loading-text span {
+            color: var(--text-primary);
+        }
+
+        .progress-bar {
+            background: var(--text-accent);
+        }
+
+        @media (max-width: 768px) {
+            .about-content {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+            }
+            
+            .theme-toggle {
+                top: 1rem;
+                right: 1rem;
+                transform: none;
+            }
+            
+            .theme-toggle:hover {
+                transform: scale(1.1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Theme Toggle -->
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+        <span class="theme-icon sun-icon">☀️</span>
+        <span class="theme-icon moon-icon">🌙</span>
+    </button>
+
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-text">
+            <span>🅰️</span><span>🅱️</span><span>♓️</span><span>🅰️</span><span>🈂️</span>
+        </div>
+        <div class="loading-progress">
+            <div class="progress-bar"></div>
+        </div>
+    </div>
+
+    <!-- Cursor -->
+    <div class="cursor" id="cursor">
+        <div class="cursor-dot"></div>
+        <div class="cursor-circle"></div>
+    </div>
+
+    <!-- Dennis Style Animated Background Text -->
+    <div class="dennis-animated-text" id="animatedText"><span class="pe-12">About Page<span class="spacer">—</span></span><span class="pe-12">About Page<span class="spacer">—</span></span><span class="pe-12">About Page<span class="spacer">—</span></span><span class="pe-12">About Page<span class="spacer">—</span></span><span class="pe-12">About Page<span class="spacer">—</span></span><span class="pe-12">About Page<span class="spacer">—</span></span><span class="pe-12">About Page<span class="spacer">—</span></span><span class="pe-12">About Page<span class="spacer">—</span></span></div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <a href="../index.html">Abhay</a>
+            </div>
+            <div class="nav-menu" id="navMenu">
+                <a href="../index.html" class="nav-link">Home</a>
+                <a href="work.html" class="nav-link">Work</a>
+                <a href="about.html" class="nav-link active">About</a>
+                <a href="contact.html" class="nav-link">Contact</a>
+            </div>
+            <div class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Content -->
+    <main class="page-content">
+        <section class="content-section">
+            <div class="page-header">
+                <div class="page-subtitle">Get to Know Me</div>
+                <h1 class="page-title">About Me</h1>
+                <p class="page-description">
+                    Learn more about my journey, skills, and passion for creating beautiful digital experiences.
+                </p>
+            </div>
+
+            <div class="about-content">
+                <div class="about-text">
+                    <h3>My Story</h3>
+                    <p class="about-paragraph">I'm Abhay, a passionate web developer with a love for creating beautiful and functional digital experiences. My journey in web development has been exciting, and I'm always eager to learn new technologies and improve my skills.</p>
+                    
+                    <p class="about-paragraph">I specialize in creating modern, responsive websites that not only look great but also provide excellent user experiences. Currently exploring the latest in web technologies including React, Next.js, and modern CSS frameworks.</p>
+                    
+                    <p class="about-paragraph">I believe in writing clean, maintainable code and following best practices to deliver high-quality solutions that make a real impact.</p>
+
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-number">10+</div>
+                            <div class="stat-label">Projects Completed</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">2+</div>
+                            <div class="stat-label">Years Experience</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">100%</div>
+                            <div class="stat-label">Client Satisfaction</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="about-image">
+                    <div class="about-photo">
+                        <span>👨‍💻</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Skills Section -->
+            <div style="margin-top: 8rem;">
+                <div class="page-subtitle">Expertise</div>
+                <h2 class="page-title" style="font-size: 2rem;">Skills & Technologies</h2>
+                <div class="skills-grid" style="margin-top: 3rem;">
+                    <div class="skill-category">
+                        <h4>Frontend Development</h4>
+                        <div class="skill-tags">
+                            <span class="skill-tag">HTML5</span>
+                            <span class="skill-tag">CSS3</span>
+                            <span class="skill-tag">JavaScript</span>
+                            <span class="skill-tag">React</span>
+                            <span class="skill-tag">Next.js</span>
+                            <span class="skill-tag">TypeScript</span>
+                        </div>
+                    </div>
+                    <div class="skill-category">
+                        <h4>Backend Development</h4>
+                        <div class="skill-tags">
+                            <span class="skill-tag">Node.js</span>
+                            <span class="skill-tag">Java</span>
+                            <span class="skill-tag">Spring Boot</span>
+                            <span class="skill-tag">APIs</span>
+                            <span class="skill-tag">MongoDB</span>
+                            <span class="skill-tag">PostgreSQL</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-content">
+                <div class="footer-left">
+                    <div class="footer-logo">Abhay</div>
+                    <div class="footer-tagline">Helping brands stand out in the digital era.</div>
+                </div>
+                <div class="footer-right">
+                    <div class="footer-social">
+                        <a href="#" class="footer-social-link">Instagram</a>
+                        <a href="#" class="footer-social-link">Twitter</a>
+                        <a href="#" class="footer-social-link">LinkedIn</a>
+                        <a href="#" class="footer-social-link">GitHub</a>
+                    </div>
+                    <div class="footer-copyright">
+                        © 2025 Abhay. All rights reserved.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        // Dark Mode Functionality
+        const themeToggle = document.getElementById('themeToggle');
+        const htmlElement = document.documentElement;
+        
+        // Check for saved theme preference
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        htmlElement.setAttribute('data-theme', currentTheme);
+        
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = htmlElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            htmlElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        });
+
+        // Dennis Style Animation
+        let lastScrollY = 0;
+        const animatedText = document.getElementById('animatedText');
+        
+        window.addEventListener('scroll', () => {
+            const currentScrollY = window.scrollY;
+            const translateX = -currentScrollY * 0.5;
+            animatedText.style.transform = `translate(calc(-50% + ${translateX}px), -50%)`;
+            lastScrollY = currentScrollY;
+        });
+    </script>
+    <script src="../script.js"></script>
+</body>
+</html>
+
