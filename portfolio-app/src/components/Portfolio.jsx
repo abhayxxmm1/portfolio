@@ -6,6 +6,9 @@ import {
   useSpring,
   AnimatePresence,
 } from "framer-motion";
+import MagneticButton from "./MagneticButton";
+import TextShuffle from "./TextShuffle";
+import useLenis from "../hooks/useLenis";
 
 /* ─── DATA ─────────────────────────────────────── */
 const NAV_LINKS = ["Home", "Work", "About", "Contact"];
@@ -144,6 +147,7 @@ const THEMES = {
     cursorFill: "rgba(245,245,247,0.85)",
     cursorRing: "rgba(245,245,247,0.18)",
     accent: "#34c759",
+    shuffleAccent: "#8B5CF6",
     toggleLabel: "Light",
     toggleIcon: "☀️",
   },
@@ -173,21 +177,31 @@ const THEMES = {
     cursorFill: "rgba(29,29,31,0.82)",
     cursorRing: "rgba(29,29,31,0.18)",
     accent: "#34c759",
+    shuffleAccent: "#6D28D9",
     toggleLabel: "Dark",
     toggleIcon: "🌙",
   },
 };
 
-/* ─── ANIMATION VARIANTS ────────────────────────── */
+/* ─── MOTION DESIGN SYSTEM ──────────────────────── */
+/* Small, consistent set of durations/easings used across the site. */
+const EASE = [0.25, 0.46, 0.45, 0.94];
+const DURATION = {
+  micro: 0.2,
+  normal: 0.4,
+  section: 0.6,
+  cinematic: 0.9,
+};
+
 const fadeUp = {
   hidden: { opacity: 0, y: 18 },
   visible: (i = 0) => ({
     opacity: 1,
     y: 0,
     transition: {
-      duration: 0.58,
+      duration: DURATION.section,
       delay: i * 0.1,
-      ease: [0.25, 0.46, 0.45, 0.94],
+      ease: EASE,
     },
   }),
 };
@@ -197,9 +211,9 @@ const scaleIn = {
     opacity: 1,
     scale: 1,
     transition: {
-      duration: 0.5,
+      duration: DURATION.normal + 0.1,
       delay: i * 0.07,
-      ease: [0.25, 0.46, 0.45, 0.94],
+      ease: EASE,
     },
   }),
 };
@@ -284,12 +298,13 @@ function ThemeToggle({ theme, onToggle, T, isMobile }) {
   );
 }
 
-/* ─── CUSTOM CURSOR ─────────────────────────────── */
+/* ─── CUSTOM CURSOR (contextual: default / view / open) ─────── */
 function Cursor({ T }) {
   const pos = useRef({ x: -100, y: -100 });
   const dot = useRef(null);
   const ring = useRef(null);
-  const [hov, setHov] = useState(false);
+  const label = useRef(null);
+  const [variant, setVariant] = useState("default"); // default | view | open
 
   useEffect(() => {
     let rafId,
@@ -306,14 +321,21 @@ function Cursor({ T }) {
       rx += (pos.current.x - rx) * 0.11;
       ry += (pos.current.y - ry) * 0.11;
       if (ring.current)
-        ring.current.style.transform = `translate(${rx - 18}px,${ry - 18}px)`;
+        ring.current.style.transform = `translate(${rx}px,${ry}px) translate(-50%,-50%)`;
       rafId = requestAnimationFrame(tick);
     };
     const enter = (e) => {
-      if (e.target.closest("a,button,input,textarea,select")) setHov(true);
+      const target = e.target.closest("[data-cursor]");
+      if (target) {
+        setVariant(target.getAttribute("data-cursor") || "hover");
+        return;
+      }
+      if (e.target.closest("a,button,input,textarea,select"))
+        setVariant("hover");
     };
     const leave = (e) => {
-      if (e.target.closest("a,button,input,textarea,select")) setHov(false);
+      if (e.target.closest("a,button,input,textarea,select,[data-cursor]"))
+        setVariant("default");
     };
     window.addEventListener("mousemove", move, { passive: true });
     document.addEventListener("mouseover", enter);
@@ -327,7 +349,10 @@ function Cursor({ T }) {
     };
   }, []);
 
-  const sz = hov ? 44 : 36;
+  const sizes = { default: 36, hover: 44, view: 76, open: 64 };
+  const sz = sizes[variant] || 36;
+  const showLabel = variant === "view" || variant === "open";
+
   return (
     <>
       <div
@@ -342,7 +367,9 @@ function Cursor({ T }) {
           height: 6,
           borderRadius: "50%",
           background: T.cursorFill,
+          opacity: showLabel ? 0 : 1,
           willChange: "transform",
+          transition: "opacity 0.2s",
         }}
       />
       <div
@@ -356,14 +383,39 @@ function Cursor({ T }) {
           width: sz,
           height: sz,
           borderRadius: "50%",
-          border: `1px solid ${hov ? T.borderHover : T.cursorRing}`,
-          willChange: "transform",
-          marginLeft: hov ? -4 : 0,
-          marginTop: hov ? -4 : 0,
+          background: showLabel ? T.text : "transparent",
+          border: `1px solid ${
+            variant !== "default" ? T.borderHover : T.cursorRing
+          }`,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          willChange: "transform, width, height",
           transition:
-            "width 0.22s, height 0.22s, border-color 0.22s, margin 0.22s",
+            "width 0.28s cubic-bezier(0.25,0.46,0.45,0.94), height 0.28s cubic-bezier(0.25,0.46,0.45,0.94), background 0.28s, border-color 0.28s",
         }}
-      />
+      >
+        <AnimatePresence>
+          {showLabel && (
+            <motion.span
+              initial={{ opacity: 0, scale: 0.6 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.6 }}
+              transition={{ duration: 0.18 }}
+              style={{
+                fontSize: "0.62rem",
+                fontWeight: 600,
+                letterSpacing: "0.08em",
+                textTransform: "uppercase",
+                color: T.bg,
+                fontFamily: "var(--font-apple)",
+              }}
+            >
+              {variant === "view" ? "View" : "Open"}
+            </motion.span>
+          )}
+        </AnimatePresence>
+      </div>
     </>
   );
 }
@@ -430,28 +482,7 @@ function VideoSlot({ label, hint, id, T, src }) {
         {label}
       </div>
 
-      <div
-        style={{
-          fontFamily: "var(--font-apple)",
-          fontSize: "0.7rem",
-          color: T.textMuted,
-          lineHeight: 1.6,
-          maxWidth: 260,
-        }}
-      >
-        {hint}
-      </div>
-
-      <code
-        style={{
-          fontSize: "0.6rem",
-          color: T.textMuted,
-          fontFamily: "ui-monospace,'SF Mono',monospace",
-          opacity: 0.6,
-        }}
-      >
-        id: {id}
-      </code>
+      
     </div>
   );
 }
@@ -465,6 +496,7 @@ function ProjectCard({ p, i, T, isMobile }) {
         href={p.link}
         target="_blank"
         rel="noopener noreferrer"
+        data-cursor="view"
         onHoverStart={() => setHov(true)}
         onHoverEnd={() => setHov(false)}
         whileHover={{
@@ -607,6 +639,9 @@ function ProjectCard({ p, i, T, isMobile }) {
 
 /* ─── MAIN ──────────────────────────────────────── */
 export default function Portfolio() {
+  /* Smooth scroll (no-ops on touch/reduced-motion) */
+  useLenis();
+
   /* Theme init — respects localStorage then system pref */
   const [theme, setTheme] = useState(() => {
     if (typeof window !== "undefined") {
@@ -631,6 +666,9 @@ export default function Portfolio() {
   });
   const [sent, setSent] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  /* Cinematic first-load gate — content is already in DOM, this just
+     sequences a brief entrance so first paint feels intentional. */
+  const [booted, setBooted] = useState(false);
 
   const R = {
     Home: useRef(null),
@@ -686,6 +724,16 @@ export default function Portfolio() {
     document.documentElement.setAttribute("data-theme", theme);
     document.body.style.background = T.bg;
   }, [theme, T.bg]);
+
+  /* Fire the boot sequence once on mount. Kept short (~0.5s) so it never
+     feels like a loading screen. */
+  useEffect(() => {
+    const prefersReduced = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+    const t = setTimeout(() => setBooted(true), prefersReduced ? 0 : 80);
+    return () => clearTimeout(t);
+  }, []);
 
   const go = (k) => {
     R[k]?.current?.scrollIntoView({ behavior: "smooth" });
@@ -751,7 +799,16 @@ export default function Portfolio() {
 
       {/* ── NAV ─────────────────────────────────────────────── */}
       <motion.nav
-        animate={{
+        initial={{ y: -20, opacity: 0 }}
+        animate={booted ? { y: 0, opacity: 1 } : {}}
+        transition={{ duration: DURATION.section, ease: EASE }}
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 900,
+          height: 58,
           background: scrolled ? T.navBg : "transparent",
           backdropFilter: scrolled ? "blur(36px) saturate(180%)" : "blur(0px)",
           WebkitBackdropFilter: scrolled
@@ -761,15 +818,9 @@ export default function Portfolio() {
             ? `1px solid ${T.border}`
             : "1px solid transparent",
           boxShadow: scrolled ? T.shadow : "none",
-        }}
-        transition={{ duration: 0.28 }}
-        style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          right: 0,
-          zIndex: 900,
-          height: 58,
+          transitionProperty:
+            "background, border-color, box-shadow, backdrop-filter",
+          transitionDuration: "0.28s",
         }}
       >
         <div
@@ -835,6 +886,7 @@ export default function Portfolio() {
               href="/Abhay_Resume.pdf"
               target="_blank"
               rel="noopener noreferrer"
+              data-cursor="open"
               whileHover={{ background: T.bgCardHover }}
               style={{
                 marginLeft: "0.4rem",
@@ -946,7 +998,7 @@ export default function Portfolio() {
                 onClick={() => go(l)}
                 initial={{ x: -14, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
-                transition={{ delay: i * 0.06, ease: [0.25, 0.46, 0.45, 0.94] }}
+                transition={{ delay: i * 0.06, ease: EASE }}
                 style={{
                   display: "flex",
                   alignItems: "baseline",
@@ -1016,6 +1068,7 @@ export default function Portfolio() {
       {/* ══════════════ HERO ══════════════════════════════════ */}
       <section
         ref={R.Home}
+        className="hero-section"
         style={{
           minHeight: "100vh",
           display: "flex",
@@ -1028,6 +1081,32 @@ export default function Portfolio() {
           overflow: "hidden",
         }}
       >
+        {/* Background image — anchored right so face isn't behind headline text */}
+        <div
+          className="hero-bg-image"
+          style={{
+            position: "absolute",
+            inset: 0,
+            zIndex: 0,
+            backgroundImage: "url(/IMG_20260822_005439.png)",
+            backgroundSize: "cover",
+            backgroundPosition: "75% 20%",
+            backgroundRepeat: "no-repeat",
+            opacity: theme === "dark" ? 0.85 : 0.55,
+          }}
+        />
+        {/* Scrim — lighter now, just enough for text legibility on the left */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            zIndex: 0,
+            background:
+              theme === "dark"
+                ? "linear-gradient(105deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.55) 38%, rgba(0,0,0,0.1) 68%, rgba(0,0,0,0) 100%)"
+                : "linear-gradient(105deg, rgba(255,255,255,0.88) 0%, rgba(255,255,255,0.6) 38%, rgba(255,255,255,0.12) 68%, rgba(255,255,255,0) 100%)",
+          }}
+        />
         {/* Ambient radial — subtle, theme-aware */}
         <div
           style={{
@@ -1061,20 +1140,20 @@ export default function Portfolio() {
 
         <motion.div
           style={{
-            maxWidth: 720,
-            textAlign: "center",
+            maxWidth: 560,
+            textAlign: isMobile ? "center" : "left",
             position: "relative",
             zIndex: 2,
+            marginRight: "auto",
             y: isMobile ? 0 : sY,
             opacity: isMobile ? 1 : heroOp,
           }}
         >
           {/* Status badge */}
           <motion.div
-            variants={fadeUp}
-            initial="hidden"
-            animate="visible"
-            custom={0}
+            initial={{ opacity: 0, y: 18 }}
+            animate={booted ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: DURATION.section, delay: 0.05, ease: EASE }}
             style={{
               display: "inline-flex",
               alignItems: "center",
@@ -1105,103 +1184,108 @@ export default function Portfolio() {
             Available for work · 2026
           </motion.div>
 
-          {/* H1 */}
-          <motion.h1
-            variants={fadeUp}
-            initial="hidden"
-            animate="visible"
-            custom={1}
-            style={{
-              fontFamily: "var(--font-apple)",
-              fontWeight: 700,
-              fontSize: "clamp(2.7rem,7.2vw,5.4rem)",
-              lineHeight: 1.05,
-              letterSpacing: "-0.045em",
-              color: T.text,
-              marginBottom: "1.5rem",
-            }}
-          >
-            Building intelligent
-            <br />
-            <span style={{ color: T.textSub }}>web applications</span>
-            <br />
-            for the AI era.
-          </motion.h1>
+          {/* H1 — cinematic character-shuffle reveal */}
+          {booted && (
+            <TextShuffle
+              lines={[
+                "Building intelligent",
+                "web applications",
+                "for the AI era.",
+              ]}
+              play={booted}
+              baseDelay={0.15}
+              textColor={T.text}
+              accentColor={T.shuffleAccent}
+              style={{
+                fontFamily: "var(--font-apple)",
+                fontWeight: 700,
+                fontSize: "clamp(2.7rem,7.2vw,5.4rem)",
+                lineHeight: 1.05,
+                letterSpacing: "-0.045em",
+                marginBottom: "0",
+              }}
+            />
+          )}
+          <div style={{ height: "1.5rem" }} />
 
           {/* Sub */}
           <motion.p
-            variants={fadeUp}
-            initial="hidden"
-            animate="visible"
-            custom={2}
+            initial={{ opacity: 0, y: 18 }}
+            animate={booted ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: DURATION.section, delay: 0.55, ease: EASE }}
             style={{
               fontSize: "clamp(0.96rem,2.1vw,1.12rem)",
               color: T.textSub,
               lineHeight: 1.78,
               maxWidth: 478,
-              margin: "0 auto 2.8rem",
+              margin: "0 0 2.8rem 0",
               fontWeight: 400,
               letterSpacing: "0.01em",
             }}
           >
-            specialising in Java, Spring Boot and modern frontend.
-            Focused on AI integration, clean architecture and real-world impact.
+            specialising in Java, Spring Boot and modern frontend. Focused on AI
+            integration, clean architecture and real-world impact.
           </motion.p>
 
           {/* CTAs */}
           <motion.div
-            variants={fadeUp}
-            initial="hidden"
-            animate="visible"
-            custom={3}
+            initial={{ opacity: 0, y: 18 }}
+            animate={booted ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: DURATION.section, delay: 0.68, ease: EASE }}
             style={{
               display: "flex",
               gap: "0.7rem",
-              justifyContent: "center",
+              justifyContent: "flex-start",
               flexWrap: "wrap",
             }}
           >
-            <motion.button
-              onClick={() => go("Work")}
-              whileHover={{ scale: 1.025, opacity: 0.88 }}
-              whileTap={{ scale: 0.975 }}
-              style={{
-                padding: "0.78rem 1.8rem",
-                borderRadius: 100,
-                background: T.btnBg,
-                border: "none",
-                cursor: isMobile ? "pointer" : "none",
-                color: T.btnText,
-                fontFamily: "var(--font-apple)",
-                fontWeight: 500,
-                fontSize: "0.9rem",
-                letterSpacing: "0.008em",
-                boxShadow: T.shadow,
-              }}
-            >
-              View My Work
-            </motion.button>
-            <motion.button
-              onClick={() => go("Contact")}
-              whileHover={{ scale: 1.025, background: T.bgCardHover }}
-              whileTap={{ scale: 0.975 }}
-              style={{
-                padding: "0.78rem 1.8rem",
-                borderRadius: 100,
-                background: T.btnSecBg,
-                border: `1px solid ${T.border}`,
-                backdropFilter: "blur(14px)",
-                cursor: isMobile ? "pointer" : "none",
-                color: T.btnSecText,
-                fontFamily: "var(--font-apple)",
-                fontWeight: 500,
-                fontSize: "0.9rem",
-                letterSpacing: "0.008em",
-                transition: "background 0.2s",
-              }}
-            >
-              Get in Touch
-            </motion.button>
+            <MagneticButton>
+              <motion.button
+                onClick={() => go("Work")}
+                data-cursor="open"
+                whileHover={{ scale: 1.025, opacity: 0.88 }}
+                whileTap={{ scale: 0.975 }}
+                style={{
+                  padding: "0.78rem 1.8rem",
+                  borderRadius: 100,
+                  background: T.btnBg,
+                  border: "none",
+                  cursor: isMobile ? "pointer" : "none",
+                  color: T.btnText,
+                  fontFamily: "var(--font-apple)",
+                  fontWeight: 500,
+                  fontSize: "0.9rem",
+                  letterSpacing: "0.008em",
+                  boxShadow: T.shadow,
+                }}
+              >
+                View My Work
+              </motion.button>
+            </MagneticButton>
+            <MagneticButton>
+              <motion.button
+                onClick={() => go("Contact")}
+                data-cursor="open"
+                whileHover={{ scale: 1.025, background: T.bgCardHover }}
+                whileTap={{ scale: 0.975 }}
+                style={{
+                  padding: "0.78rem 1.8rem",
+                  borderRadius: 100,
+                  background: T.btnSecBg,
+                  border: `1px solid ${T.border}`,
+                  backdropFilter: "blur(14px)",
+                  cursor: isMobile ? "pointer" : "none",
+                  color: T.btnSecText,
+                  fontFamily: "var(--font-apple)",
+                  fontWeight: 500,
+                  fontSize: "0.9rem",
+                  letterSpacing: "0.008em",
+                  transition: "background 0.2s",
+                }}
+              >
+                Get in Touch
+              </motion.button>
+            </MagneticButton>
           </motion.div>
         </motion.div>
 
@@ -1256,15 +1340,6 @@ export default function Portfolio() {
             <div style={labelStyle}>01 — Featured Work</div>
             <h2 style={titleStyle}>Projects</h2>
           </Reveal>
-
-          {/* Video slots */}
-          {/* <Reveal style={{ marginBottom: "2.5rem" }}>
-            <p style={{ ...labelStyle, marginBottom: "1rem" }}>Showcase Videos</p>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))", gap: "1rem" }}>
-              <VideoSlot label="Demo Reel" hint="A short walkthrough or screen recording of your best project." id="video-demo-reel" T={T} />
-              <VideoSlot label="Code Walkthrough" hint="Architecture or live code walkthrough." id="video-code-walk" T={T} />
-            </div>
-          </Reveal> */}
 
           {/* Cards */}
           <div
@@ -1323,30 +1398,7 @@ export default function Portfolio() {
                   boxShadow: T.shadowCard,
                 }}
               >
-                <div
-                  style={{
-                    width: 46,
-                    height: 46,
-                    borderRadius: 12,
-                    border: `1px solid ${T.border}`,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: "1.25rem",
-                    background: T.tagBg,
-                  }}
-                >
-                  {" "}
-                  <img
-                    src="/ab.jpeg"
-                    alt="icon"
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                    }}
-                  />{" "}
-                </div>
+                
                 <h3
                   style={{
                     fontFamily: "var(--font-apple)",
@@ -1367,10 +1419,10 @@ export default function Portfolio() {
                     letterSpacing: "0.008em",
                   }}
                 >
-                  A passionate full-stack developer and Computer Engineering graduate
-                  with a love for creating beautiful, functional digital
-                  experiences. My journey spans backend systems with Java &amp;
-                  Spring Boot through to modern frontend interfaces.
+                  A passionate full-stack developer and Computer Engineering
+                  graduate with a love for creating beautiful, functional
+                  digital experiences. My journey spans backend systems with
+                  Java &amp; Spring Boot through to modern frontend interfaces.
                 </p>
                 <p
                   style={{
@@ -1388,7 +1440,6 @@ export default function Portfolio() {
 
                 <VideoSlot
                   label="Personal Introduction"
-                  id="video-intro"
                   T={T}
                   src="/intro1.mp4"
                 />
@@ -1423,6 +1474,7 @@ export default function Portfolio() {
                     href="/Abhay_Resume.pdf"
                     target="_blank"
                     rel="noopener noreferrer"
+                    data-cursor="open"
                     whileHover={{ scale: 1.03, background: T.bgCardHover }}
                     style={{
                       padding: "0.42rem 0.88rem",
@@ -1702,8 +1754,6 @@ export default function Portfolio() {
                     </motion.a>
                   ))}
                 </div>
-
-                {/* <VideoSlot label="Message for Clients" hint="A short video pitch for potential collaborators or employers." id="video-client-pitch" T={T} /> */}
               </div>
             </Reveal>
 
@@ -1792,33 +1842,37 @@ export default function Portfolio() {
                     }
                     style={{ ...inp, resize: "vertical", minHeight: 130 }}
                   />
-                  <motion.button
-                    type="submit"
-                    whileHover={{ scale: 1.015, opacity: 0.9 }}
-                    whileTap={{ scale: 0.985 }}
-                    animate={{
-                      background: sent
-                        ? theme === "dark"
-                          ? "rgba(52,199,89,0.12)"
-                          : "rgba(52,199,89,0.09)"
-                        : T.btnBg,
-                      color: sent ? T.accent : T.btnText,
-                    }}
-                    transition={{ duration: 0.3 }}
-                    style={{
-                      padding: "0.88rem",
-                      borderRadius: 100,
-                      border: sent ? `1px solid ${T.accent}44` : "none",
-                      cursor: isMobile ? "pointer" : "none",
-                      fontFamily: "var(--font-apple)",
-                      fontWeight: 500,
-                      fontSize: "0.9rem",
-                      letterSpacing: "0.008em",
-                      boxShadow: sent ? "none" : T.shadow,
-                    }}
-                  >
-                    {sent ? "✓ Message Sent!" : "Send Message →"}
-                  </motion.button>
+                  <MagneticButton strength={0.2}>
+                    <motion.button
+                      type="submit"
+                      data-cursor="open"
+                      whileHover={{ scale: 1.015, opacity: 0.9 }}
+                      whileTap={{ scale: 0.985 }}
+                      animate={{
+                        background: sent
+                          ? theme === "dark"
+                            ? "rgba(52,199,89,0.12)"
+                            : "rgba(52,199,89,0.09)"
+                          : T.btnBg,
+                        color: sent ? T.accent : T.btnText,
+                      }}
+                      transition={{ duration: 0.3 }}
+                      style={{
+                        width: "100%",
+                        padding: "0.88rem",
+                        borderRadius: 100,
+                        border: sent ? `1px solid ${T.accent}44` : "none",
+                        cursor: isMobile ? "pointer" : "none",
+                        fontFamily: "var(--font-apple)",
+                        fontWeight: 500,
+                        fontSize: "0.9rem",
+                        letterSpacing: "0.008em",
+                        boxShadow: sent ? "none" : T.shadow,
+                      }}
+                    >
+                      {sent ? "✓ Message Sent!" : "Send Message →"}
+                    </motion.button>
+                  </MagneticButton>
                 </form>
               </div>
             </Reveal>
@@ -1965,6 +2019,24 @@ export default function Portfolio() {
         }
         @media (min-width: 769px) {
           .mob-controls { display: none !important; }
+        }
+
+        /* Hero: keep face uncropped and text legible across breakpoints */
+        @media (min-width: 769px) {
+          .hero-bg-image { background-position: 78% 18% !important; }
+        }
+        @media (max-width: 1024px) and (min-width: 769px) {
+          .hero-bg-image { background-position: 82% 15% !important; }
+        }
+        @media (max-width: 768px) {
+          .hero-section { padding: 7rem 1.25rem 4rem !important; }
+          .hero-bg-image {
+            background-position: 50% 8% !important;
+            opacity: 0.28 !important;
+          }
+        }
+        @media (max-width: 430px) {
+          .hero-section { padding: 6rem 1rem 3.5rem !important; }
         }
 
         /* Reduced motion */

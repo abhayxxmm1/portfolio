@@ -1,0 +1,40 @@
+--- Folder Layout ---
+.DS_Store
+[.git] (...)
+[.vscode] (...)
+[portfolio-app]
+    ├── .DS_Store
+    ├── .gitignore
+    ├── README.md
+    ├── [dist] (...)
+    ├── eslint.config.js
+    ├── index.html
+    ├── [node_modules] (...)
+    ├── package-lock.json
+    ├── package.json
+    ├── postcss.config.js
+    ├── [public]
+        ├── Abhay_Resume.pdf
+        ├── IMG_20260822_005439.png
+        ├── WhatsApp Image 2026-04-19 at 02.32.44.jpeg
+        ├── _redirects
+        ├── a.svg
+        ├── ab.jpeg
+        ├── icons.svg
+        └── intro1.mp4
+    ├── [src]
+        ├── App.css
+        ├── App.jsx
+        ├── [assets]
+            ├── hero.png
+            ├── react.svg
+            └── vite.svg
+        ├── [components]
+            └── Portfolio.jsx
+        ├── index.css
+        ├── main.jsx
+        └── [styles]
+            └── portfolio.css
+    ├── tailwind.config.js
+    └── vite.config.js
+project_layout.txt
