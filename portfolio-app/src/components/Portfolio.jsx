@@ -9,6 +9,7 @@ import {
 import MagneticButton from "./MagneticButton";
 import TextShuffle from "./TextShuffle";
 import useLenis from "../hooks/useLenis";
+import MyStory from "./MyStory";
 
 /* ─── DATA ─────────────────────────────────────── */
 const NAV_LINKS = ["Home", "Work", "About", "Contact"];
@@ -244,10 +245,82 @@ function Reveal({ children, variants = fadeUp, custom = 0, style = {} }) {
       variants={variants}
       custom={custom}
     >
-      {children}
+      {typeof children === "function" ? children(inView) : children}
     </motion.div>
   );
 }
+{/* WORK */}
+<Reveal style={{ marginBottom: "3.5rem" }}>
+  {(inView) => (
+    <>
+      <div style={labelStyle}>01 — Featured Work</div>
+      <h2 style={titleStyle}>
+        <TextShuffle
+          lines={["Projects"]}
+          play={inView}
+          baseDelay={0.05}
+          textColor={T.text}
+          accentColor={T.shuffleAccent}
+          waveStepMs={16}
+          cyclesRange={[4, 7]}
+          durationBase={34}
+        />
+      </h2>
+    </>
+  )}
+</Reveal>
+{/* ABOUT */}
+<Reveal style={{ marginBottom: "3.5rem" }}>
+  {(inView) => (
+    <>
+      <div style={labelStyle}>02 — About Me</div>
+      <h2 style={titleStyle}>
+        <TextShuffle
+          lines={["My Story"]}
+          play={inView}
+          baseDelay={0.05}
+          textColor={T.text}
+          accentColor={T.shuffleAccent}
+          waveStepMs={16}
+          cyclesRange={[4, 7]}
+          durationBase={34}
+        />
+      </h2>
+    </>
+  )}
+</Reveal>
+{/* CONTACT */}
+<Reveal style={{ marginBottom: "3.5rem" }}>
+  {(inView) => (
+    <>
+      <div style={labelStyle}>03 — Contact</div>
+      <h2 style={titleStyle}>
+        <TextShuffle
+          lines={["Let's Work Together"]}
+          play={inView}
+          baseDelay={0.05}
+          textColor={T.text}
+          accentColor={T.shuffleAccent}
+          waveStepMs={13}
+          cyclesRange={[4, 7]}
+          durationBase={32}
+          noWrapWords={false}
+        />
+      </h2>
+      <p
+        style={{
+          color: T.textSub,
+          fontSize: "0.95rem",
+          marginTop: "0.6rem",
+          fontWeight: 400,
+          letterSpacing: "0.008em",
+        }}
+      >
+        Have a project in mind? Let's bring it to life.
+      </p>
+    </>
+  )}
+</Reveal>
 
 /* ─── THEME TOGGLE BUTTON ───────────────────────── */
 function ThemeToggle({ theme, onToggle, T, isMobile }) {
@@ -824,6 +897,7 @@ export default function Portfolio() {
         }}
       >
         <div
+          className="desktop-full-width"
           style={{
             maxWidth: 1200,
             margin: "0 auto",
@@ -1335,7 +1409,7 @@ export default function Portfolio() {
         ref={R.Work}
         style={{ padding: "7rem 1.5rem", position: "relative", zIndex: 2 }}
       >
-        <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+        <div className="desktop-full-width" style={{ maxWidth: 1200, margin: "0 auto" }}>
           <Reveal style={{ marginBottom: "3.5rem" }}>
             <div style={labelStyle}>01 — Featured Work</div>
             <h2 style={titleStyle}>Projects</h2>
@@ -1368,7 +1442,7 @@ export default function Portfolio() {
           transition: "background 0.35s",
         }}
       >
-        <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+        <div className="desktop-full-width" style={{ maxWidth: 1200, margin: "0 auto" }}>
           <Reveal style={{ marginBottom: "3.5rem" }}>
             <div style={labelStyle}>02 — About Me</div>
             <h2 style={titleStyle}>My Story</h2>
@@ -1626,7 +1700,10 @@ export default function Portfolio() {
               ))}
             </div>
           </Reveal>
+
+          <MyStory T={T} isMobile={isMobile} />
         </div>
+
       </section>
 
       {/* ══════════════ CONTACT ════════════════════════════════ */}
@@ -1634,7 +1711,7 @@ export default function Portfolio() {
         ref={R.Contact}
         style={{ padding: "7rem 1.5rem 9rem", position: "relative", zIndex: 2 }}
       >
-        <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+        <div className="desktop-full-width" style={{ maxWidth: 1200, margin: "0 auto" }}>
           <Reveal style={{ marginBottom: "3.5rem" }}>
             <div style={labelStyle}>03 — Contact</div>
             <h2 style={titleStyle}>Let's Work Together</h2>
@@ -1894,6 +1971,7 @@ export default function Portfolio() {
         }}
       >
         <div
+          className="desktop-full-width"
           style={{
             maxWidth: 1200,
             margin: "0 auto",
@@ -2019,6 +2097,16 @@ export default function Portfolio() {
         }
         @media (min-width: 769px) {
           .mob-controls { display: none !important; }
+        }
+
+        /* Desktop full-width containers — mobile is untouched since these
+           divs already carry their original maxWidth:1200 inline style,
+           which was never binding below 1200px anyway. */
+        @media (min-width: 769px) {
+          .desktop-full-width {
+            max-width: none !important;
+            width: 100% !important;
+          }
         }
 
         /* Hero: keep face uncropped and text legible across breakpoints */

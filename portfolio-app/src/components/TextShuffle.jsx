@@ -52,6 +52,9 @@ export default function TextShuffle({
   textColor = "currentColor",
   accentColor = "#8B5CF6",
   waveStepMs = 20,
+  cyclesRange = [5, 9], // ← new, hero's old hardcoded values as default
+  durationBase = 42, // ← new, hero's old hardcoded value as default
+  noWrapWords = true, // ← new, hero's old nbsp-join behavior as default
   style = {},
   className,
   enableHover = true,
@@ -69,10 +72,17 @@ export default function TextShuffle({
   const fullText = lines.join(" ");
 
   useEffect(() => {
-    reducedMotionRef.current = window.matchMedia(
-      "(prefers-reduced-motion: reduce)"
-    ).matches;
-  }, []);
+    if (!play || hasPlayedRef.current) return;
+    hasPlayedRef.current = true;
+    if (reducedMotionRef.current) return;
+
+    const start = setTimeout(() => {
+      runShuffle({ intensityScale: 1, cyclesRange, durationBase });
+    }, baseDelay * 1000);
+
+    return () => clearTimeout(start);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [play]);
 
   /* Lock every animatable character's width to its natural rendered size so
      glyph swapping never causes reflow. Re-measured on resize since the
@@ -124,7 +134,8 @@ export default function TextShuffle({
         const jitter = rng() * 14 * intensityScale;
         const startDelay = i * waveStepMs * intensityScale + jitter;
         const cycles =
-          cyclesRange[0] + Math.floor(rng() * (cyclesRange[1] - cyclesRange[0]));
+          cyclesRange[0] +
+          Math.floor(rng() * (cyclesRange[1] - cyclesRange[0]));
         const el = entry.el;
         entry.timeouts = entry.timeouts || [];
 
@@ -233,7 +244,11 @@ export default function TextShuffle({
                       ref={(el) => {
                         if (!el) return;
                         if (!charRefs.current[idx]) {
-                          charRefs.current[idx] = { el, final: ch, timeouts: [] };
+                          charRefs.current[idx] = {
+                            el,
+                            final: ch,
+                            timeouts: [],
+                          };
                         } else {
                           charRefs.current[idx].el = el;
                           charRefs.current[idx].final = ch;
@@ -250,7 +265,9 @@ export default function TextShuffle({
                   );
                 })}
                 {wi < words.length - 1 ? (
-                  <span style={{ display: "inline-block" }}>{"\u00A0"}</span>
+                  <span style={{ display: "inline-block" }}>
+                    {noWrapWords ? "\u00A0" : " "}
+                  </span>
                 ) : null}
               </span>
             ))}
